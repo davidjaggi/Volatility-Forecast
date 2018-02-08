@@ -1,5 +1,0 @@
-library(shiny)
-library(shinydashboard)
-library(DT)
-library(xts)
-library(quantmod)

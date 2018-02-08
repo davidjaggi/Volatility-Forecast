@@ -1,5 +1,5 @@
 # git push -u origin master
-source('packages.R')
+source('installer.R')
 source('ErrorHandler.R')
 
 ui <- dashboardPage(
@@ -16,6 +16,7 @@ ui <- dashboardPage(
   dashboardBody(
     tabItems(
       tabItem('data',
+              fluidPage(
               fluidRow(
                 box(width = 6,
                     selectInput(inputId = 'selectedData',
@@ -25,20 +26,28 @@ ui <- dashboardPage(
                     selectInput(inputId = 'returnForm',
                                 label = 'Select Form of return',
                                 choices = c(arithmetic = 'arithmetic',
-                                            log = 'log')
-                    )
+                                            log = 'log'))
                     ),
                 box(width = 6,
                     dateRangeInput(inputId = 'dataRange',
-                                   label = 'Select Data Range')),
+                                   label = 'Select Data Range',
+                                   start = '2000-01-01', 
+                                   end = Sys.Date()),
+                    selectInput("cleaning", label = "Cleaning Type",
+                                choices = c("Previous Day" = "prevDay", "Delete" = "delete"), 
+                                multiple = FALSE))
+                ),
+              fluidRow(
                 box(width = 6,
-                    DTOutput('dataSummary')),
+                    verbatimTextOutput('dataSummary')),
+                box(width = 6,
+                   verbatimTextOutput('returnSummary'))
+                ),
                 box(width = 12,
                     plotOutput('plotData')),
                 box(width = 12,
                     plotOutput('plotReturns'))
-              )
-      ),
+      )),
       tabItem('tests',
               fluidRow())
     )
