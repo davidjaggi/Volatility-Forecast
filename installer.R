@@ -22,7 +22,10 @@ pacman::p_load("quantmod",
                "svglite",
                "rsvg",
                "SMFI5",
-               "ggplot2")
+               "ggplot2",
+               "forecast",
+               "tseries",
+               "rugarch")
 
 ### Loading the installed Packages #############################################
 library(pacman)
@@ -48,6 +51,9 @@ library(svglite)
 library(rsvg)
 library(SMFI5)
 library(ggplot2)
+library(forecast)
+library(tseries)
+library(rugarch)
 # library(googleVis)
 # library(quadprog)
 # library(xtable)
