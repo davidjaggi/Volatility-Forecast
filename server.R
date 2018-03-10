@@ -55,27 +55,28 @@ server <- function(input, output, session){
     req(input$inc_mean)
     req(input$dist_model)
     
-    flog.info(input$model)
-    flog.info(input$q)
-    flog.info(input$p)
-    flog.info(input$ar)
-    flog.info(input$ma)
-    flog.info(input$inc_mean)
-    flog.info(input$dist_model)
-    
     model <- ugarchspec(variance.model = list(model = input$model, 
                                               garchOrder = c(input$p, input$q)),
                         mean.model = list(armaOrder = c(input$ar, input$ma), 
-                                          include.mean = input$inc_mean),
+                                          include.mean = TRUE),
                         distribution.model = input$dist_model)
-    flog.info(print(model))
+    
     return(model)
   })
   
   modelfit <- reactive({
     req(model())
-    modelfit <- ugarchfit(spec=model(),data = retCalc())
+    modelfit <- ugarchfit(spec=model(),data = retCalc(), 
+                          out.sample = input$os_fit, 
+                          solver = input$solver)
     return(modelfit)
+  })
+  
+  modelforecast <- reactive({
+    req(input$n)
+    forecast <- ugarchforecast(modelfit(), data = NULL, n.ahead = input$n, 
+                               n.roll = input$n.roll, out.sample = input$os_forc)
+    return(forecast)
   })
   
   ### Outputs ##################################################################
@@ -125,11 +126,19 @@ server <- function(input, output, session){
     kpss.test(retCalc())
   })
   
-  output$print_model <- renderPrint({
-    print(model()@model$pars)
+  output$print_modfit <- renderPrint({
+    print(modelfit())
   })
   
-  output$modfit <- renderPrint(({
-    print(modelfit())
-  }))
+  output$plot_modfit <- renderPlot({
+    plot(modelfit(), which = input$fit_plot_num)
+  })
+  
+  output$plot_forecast <- renderPlot({
+    plot(modelforecast()@forecast$seriesFor)
+  })
+  
+  output$plot_forecast2 <- renderPlot({
+    plot(modelforecast(), which = input$forc_plot_num)
+  })
 }
